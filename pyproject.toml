@@ -1,0 +1,10 @@
+[project]
+name = "ai-hype-summarizer-py"
+version = "0.1.0"
+description = "No more time wasted on searching AI hype articles."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "dependency-injector>=4.45.0",
+    "sqlalchemy>=2.0.37",
+]
