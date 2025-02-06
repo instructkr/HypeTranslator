@@ -7,4 +7,5 @@ requires-python = ">=3.11"
 dependencies = [
     "dependency-injector[yaml]>=4.45.0",
     "sqlalchemy>=2.0.37",
+    "twikit>=2.3.0",
 ]

@@ -1,6 +1,7 @@
 db:
   connection_url: sqlite:///test.db
 
-twitapi:
+twikit:
   id: blahblah
+  email: blahblah@blah.com
   pw: blahblah

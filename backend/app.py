@@ -1,14 +1,17 @@
 from datetime import datetime
-from dependency_injector.wiring import inject, Provide
 from dependency_injector import containers, providers
+from twikit import asyncio
 
+# Gateways Classes
 from .database import Database
+from .twikit import Twikit
 
+# Containers Classes
 from .article.container import ArticleContainer
 from .collect_article.container import CollectArticleContainer
 
-from .article.service import ArticleService
-from .article.dto import CreateArticleDTO
+# for testing
+from dependency_injector.wiring import inject, Provide
 
 class AppContainer(containers.DeclarativeContainer):
     config = providers.Configuration(yaml_files=['config.yaml'])
@@ -17,6 +20,13 @@ class AppContainer(containers.DeclarativeContainer):
     database = providers.Singleton(
         Database,
         connection_url=config.db.connection_url,
+    )
+
+    twikit = providers.Singleton(
+        Twikit,
+        id=config.twikit.id,
+        email=config.twikit.email,
+        password=config.twikit.pw,
     )
 
     # Containers
@@ -32,17 +42,10 @@ class AppContainer(containers.DeclarativeContainer):
 
 @inject
 def test(
-        service: ArticleService = Provide[AppContainer.article.service],
+    twikit: Twikit = Provide[AppContainer.twikit],
 ) -> None:
-    service.create_article(
-        CreateArticleDTO(
-            url='https://example.com/1',
-            title='Example',
-            author='Author',
-            content='Content',
-            published_at=datetime.now(),
-        )
-    )
+    asyncio.new_event_loop()
+    print(asyncio.run(twikit.client.get_latest_timeline()))
 
 if __name__ == '__main__':
     container = AppContainer()
