@@ -1,0 +1,6 @@
+db:
+  connection_url: sqlite:///test.db
+
+twitapi:
+  id: blahblah
+  pw: blahblah

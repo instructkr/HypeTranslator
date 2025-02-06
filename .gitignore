@@ -14,3 +14,4 @@ wheels/
 
 # development files
 test.db
+config.yaml

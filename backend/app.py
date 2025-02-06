@@ -11,10 +11,12 @@ from .article.service import ArticleService
 from .article.dto import CreateArticleDTO
 
 class AppContainer(containers.DeclarativeContainer):
+    config = providers.Configuration(yaml_files=['config.yaml'])
+
     # Gateways
     database = providers.Singleton(
         Database,
-        connection_url='sqlite:///test.db',
+        connection_url=config.db.connection_url,
     )
 
     # Containers

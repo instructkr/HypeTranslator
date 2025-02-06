@@ -5,6 +5,6 @@ description = "No more time wasted on searching AI hype articles."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "dependency-injector>=4.45.0",
+    "dependency-injector[yaml]>=4.45.0",
     "sqlalchemy>=2.0.37",
 ]
