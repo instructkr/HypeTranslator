@@ -5,7 +5,9 @@ description = "No more time wasted on searching AI hype articles."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "aiosqlite>=0.21.0",
     "dependency-injector[yaml]>=4.45.0",
+    "greenlet>=3.1.1",
     "sqlalchemy>=2.0.37",
     "twikit>=2.3.0",
 ]

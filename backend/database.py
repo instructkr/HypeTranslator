@@ -1,33 +1,35 @@
-from contextlib import contextmanager, AbstractContextManager
+import asyncio
+from contextlib import asynccontextmanager, AbstractAsyncContextManager
 
-from sqlalchemy import create_engine, orm
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_scoped_session, async_sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Session
 
 Base = declarative_base()
 
 class Database:
     def __init__(self, connection_url: str):
-        self._engine = create_engine(connection_url, echo=True)
-        self._session_factory = orm.scoped_session(
-            orm.sessionmaker(
+        self._engine = create_async_engine(connection_url, echo=True)
+        self._session_factory = async_scoped_session(
+            async_sessionmaker(
                 autocommit=False,
                 autoflush=False,
                 bind=self._engine,
             ),
+            scopefunc=asyncio.current_task,
         )
 
-    @contextmanager
-    def session(self):
-        session: AbstractContextManager[Session] = self._session_factory()
+    @asynccontextmanager
+    async def session(self):
+        session: AbstractAsyncContextManager[AsyncSession] = self._session_factory()
         try:
             yield session
-            session.commit()
+            await session.commit()
         except:
-            session.rollback()
+            await session.rollback()
             raise
         finally:
-            session.close()
+            await session.close()
 
-    def create_database(self) -> None:
-        Base.metadata.create_all(self._engine)
+    async def create_database(self) -> None:
+        async with self._engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)

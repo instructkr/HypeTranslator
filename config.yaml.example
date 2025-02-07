@@ -1,5 +1,5 @@
 db:
-  connection_url: sqlite:///test.db
+  connection_url: sqlite+aiosqlite:///test.db
 
 twikit:
   id: blahblah
