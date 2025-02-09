@@ -17,7 +17,6 @@ class Database:
             async_sessionmaker(
                 autocommit=False,
                 autoflush=False,
-                expire_on_commit=False,
                 bind=self._engine,
             ),
             scopefunc=asyncio.current_task,

@@ -1,4 +1,4 @@
-from typing import List, Iterable
+from typing import List
 from .repository import ArticleRepository
 from .dto import ArticleDTO, CreateArticleDTO
 
@@ -12,5 +12,5 @@ class ArticleService:
     async def get_article(self, id: int) -> ArticleDTO | None:
         return await self.repository.get_by_id(id)
 
-    async def filter_by_url(self, urls: List[str]) -> Iterable[ArticleDTO]:
+    async def filter_by_url(self, urls: List[str]) -> List[ArticleDTO]:
         return await self.repository.filter_by_urls(urls)
