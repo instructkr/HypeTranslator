@@ -1,28 +1,33 @@
 from contextlib import AbstractAsyncContextManager
-from datetime import datetime
-from typing import Callable, List, Sequence
+from typing import Callable, List, Iterable
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from .model import Article
+from .model import ArticleModel
+from .dto import ArticleDTO, CreateArticleDTO
 
 class ArticleRepository:
     def __init__(self, session_factory: Callable[..., AbstractAsyncContextManager[AsyncSession]]):
         self.session_factory = session_factory
 
-    async def get_by_id(self, article_id: int) -> Article | None:
+    async def get_by_id(self, article_id: int) -> ArticleDTO | None:
         async with self.session_factory() as session:
-            return await session.get(Article, article_id)
+            article = await session.get(ArticleModel, article_id)
+            if article is None:
+                return None
+            return ArticleDTO(**article.to_dict())
 
-    async def filter_by_urls(self, urls: List[str]) -> Sequence[Article]:
+    async def filter_by_urls(self, urls: List[str]) -> Iterable[ArticleDTO]:
         async with self.session_factory() as session:
-            query = select(Article).filter(Article.url.in_(urls))
+            query = select(ArticleModel).filter(ArticleModel.url.in_(urls))
             result = await session.execute(query)
-            return result.scalars().all()
+            articles = result.scalars().all()
+            return map(lambda a: ArticleDTO(**a.to_dict()), articles)
 
-    async def add(self, url: str, title: str | None, author: str, content: str, published_at: datetime) -> Article:
-        article = Article(url=url, title=title, author=author, content=content, published_at=published_at)
+    async def add(self, dto: CreateArticleDTO) -> ArticleDTO:
+        article = ArticleModel(**dto.__dict__)
         async with self.session_factory() as session:
             session.add(article)
             await session.commit()
-            return article
+            await session.refresh(article)
+            return ArticleDTO(**article.to_dict())

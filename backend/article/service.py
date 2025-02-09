@@ -1,22 +1,16 @@
-from typing import List
+from typing import List, Iterable
 from .repository import ArticleRepository
-from .model import Article
-from .dto import CreateArticleDTO
+from .dto import ArticleDTO, CreateArticleDTO
 
 class ArticleService:
     def __init__(self, repository: ArticleRepository):
         self.repository = repository
 
-    async def create_article(self, dto: CreateArticleDTO) -> Article:
-        return await self.repository.add(
-                dto.url,
-                dto.title,
-                dto.author,
-                dto.content,
-                dto.published_at)
+    async def create_article(self, dto: CreateArticleDTO) -> ArticleDTO:
+        return await self.repository.add(dto)
 
-    async def get_article(self, id: int) -> Article:
+    async def get_article(self, id: int) -> ArticleDTO | None:
         return await self.repository.get_by_id(id)
 
-    async def filter_by_url(self, urls: List[str]) -> List[Article]:
+    async def filter_by_url(self, urls: List[str]) -> Iterable[ArticleDTO]:
         return await self.repository.filter_by_urls(urls)

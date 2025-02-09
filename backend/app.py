@@ -2,8 +2,6 @@ from datetime import datetime
 from dependency_injector import containers, providers
 from twikit import asyncio
 
-from backend.article.dto import CreateArticleDTO
-
 # Gateways Classes
 from .database import Database
 from .twikit import Twikit
@@ -12,8 +10,11 @@ from .twikit import Twikit
 from .article.container import ArticleContainer
 from .collect_article.container import CollectArticleContainer
 
-# for testing
+# for initializing
 from dependency_injector.wiring import inject, Provide
+
+# for testing
+from backend.article.dto import CreateArticleDTO
 
 class AppContainer(containers.DeclarativeContainer):
     config = providers.Configuration(yaml_files=['config.yaml'])
@@ -45,24 +46,32 @@ class AppContainer(containers.DeclarativeContainer):
 @inject
 async def init(
     twikit: Twikit = Provide[AppContainer.twikit],
-    article: ArticleContainer = Provide[AppContainer.article],
     database: Database = Provide[AppContainer.database],
 ) -> None:
-    await database.create_database()
-    await twikit.login()
-    print(await twikit.client.get_latest_timeline())
+    db = database.create_database()
+    login = twikit.login()
+    await asyncio.gather(db, login)
+
+@inject
+async def test(
+    article: ArticleContainer = Provide[AppContainer.article],
+) -> None:
     await article.service().create_article(
         CreateArticleDTO(
-            title=None,
-            content="test",
             url="https://www.google.com",
             author="test",
             published_at=datetime.now(),
         )
     )
 
+    print(list(await article.service().filter_by_url(["https://www.google.com"])))
+
+async def main():
+    await init()
+    await test()
+
 if __name__ == '__main__':
     container = AppContainer()
     container.init_resources()
     container.wire(modules=[__name__])
-    asyncio.run(init())
+    asyncio.run(main())

@@ -2,27 +2,6 @@ version = 1
 requires-python = ">=3.11"
 
 [[package]]
-name = "ai-hype-summarizer-py"
-version = "0.1.0"
-source = { virtual = "." }
-dependencies = [
-    { name = "aiosqlite" },
-    { name = "dependency-injector", extra = ["yaml"] },
-    { name = "greenlet" },
-    { name = "sqlalchemy" },
-    { name = "twikit" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "aiosqlite", specifier = ">=0.21.0" },
-    { name = "dependency-injector", extras = ["yaml"], specifier = ">=4.45.0" },
-    { name = "greenlet", specifier = ">=3.1.1" },
-    { name = "sqlalchemy", specifier = ">=2.0.37" },
-    { name = "twikit", specifier = ">=2.3.0" },
-]
-
-[[package]]
 name = "aiosqlite"
 version = "0.21.0"
 source = { registry = "https://pypi.org/simple" }
@@ -201,6 +180,27 @@ wheels = [
 [package.optional-dependencies]
 socks = [
     { name = "socksio" },
+]
+
+[[package]]
+name = "hype-translator"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "aiosqlite" },
+    { name = "dependency-injector", extra = ["yaml"] },
+    { name = "greenlet" },
+    { name = "sqlalchemy" },
+    { name = "twikit" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "aiosqlite", specifier = ">=0.21.0" },
+    { name = "dependency-injector", extras = ["yaml"], specifier = ">=4.45.0" },
+    { name = "greenlet", specifier = ">=3.1.1" },
+    { name = "sqlalchemy", specifier = ">=2.0.37" },
+    { name = "twikit", specifier = ">=2.3.0" },
 ]
 
 [[package]]

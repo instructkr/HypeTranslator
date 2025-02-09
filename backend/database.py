@@ -1,10 +1,14 @@
 import asyncio
+from typing import Any, Dict
 from contextlib import asynccontextmanager, AbstractAsyncContextManager
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_scoped_session, async_sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import DeclarativeBase, MappedAsDataclass
 
-Base = declarative_base()
+class Base(MappedAsDataclass, DeclarativeBase):
+    def to_dict(self) -> Dict[str, Any]:
+        print(*map(lambda c: c.name, self.__table__.columns))
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 class Database:
     def __init__(self, connection_url: str):
@@ -13,6 +17,7 @@ class Database:
             async_sessionmaker(
                 autocommit=False,
                 autoflush=False,
+                expire_on_commit=False,
                 bind=self._engine,
             ),
             scopefunc=asyncio.current_task,
