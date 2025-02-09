@@ -1,5 +1,5 @@
 [project]
-name = "ai-hype-summarizer-py"
+name = "hype-translator"
 version = "0.1.0"
 description = "No more time wasted on searching AI hype articles."
 readme = "README.md"

@@ -1,4 +1,4 @@
-# AI Hype Summarizer
+# HypeTranslator
 
 ## Getting Started
 
