@@ -9,3 +9,11 @@ class CreateArticleDTO:
     author: str
     published_at: datetime
 
+@dataclass
+class SearchArticleDTO: 
+    content: str
+    author: str
+    published_at: datetime
+    urls: str
+
+

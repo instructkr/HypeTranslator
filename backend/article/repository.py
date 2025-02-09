@@ -21,8 +21,9 @@ class ArticleRepository:
             return result.scalars().all()
 
     async def add(self, url: str, title: str | None, author: str, content: str, published_at: datetime) -> Article:
-        article = Article(url=url, title=title, author=author, content=content, published_at=published_at)
         async with self.session_factory() as session:
+            article = Article(url=url, title=title, author=author, content=content, published_at=published_at)
             session.add(article)
-            await session.commit()
+            await session.flush()
+            await session.refresh(article)
             return article

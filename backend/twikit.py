@@ -15,3 +15,6 @@ class Twikit:
             cookies_file='cookies.json'
         )
         self.client.save_cookies('cookies.json')
+    
+    async def search_tweet(self, keyword: str, limit: int):
+        return await self.client.search_tweet(query=keyword,product='Top', count=limit)

@@ -39,7 +39,9 @@ class AppContainer(containers.DeclarativeContainer):
 
     collectArticle = providers.Container(
         CollectArticleContainer,
+        database=database,
         article=article.provided,
+        twikit=twikit,
     )
 
 @inject
@@ -51,18 +53,33 @@ async def init(
     await database.create_database()
     await twikit.login()
     print(await twikit.client.get_latest_timeline())
-    await article.service().create_article(
-        CreateArticleDTO(
-            title=None,
-            content="test",
-            url="https://www.google.com",
-            author="test",
-            published_at=datetime.now(),
-        )
-    )
+    # await article.service().create_article(
+    #     CreateArticleDTO(
+    #         title=None,
+    #         content="test",
+    #         url="https://www.google.com",
+    #         author="test",
+    #         published_at=datetime.now(),
+    #     )
+    # )
+
+@inject 
+async def test_collect_articles(
+    collect_article: CollectArticleContainer = Provide[AppContainer.collectArticle],
+) -> None:
+    service = collect_article.service()
+    articles = await service.collect_articles_by_keyword("Donald Trump", 3)
+    print(f"수집된 기사 수: {len(articles)}")
 
 if __name__ == '__main__':
     container = AppContainer()
     container.init_resources()
     container.wire(modules=[__name__])
-    asyncio.run(init())
+    
+    # Combine both async operations into a single coroutine
+    async def main():
+        await init()
+        await test_collect_articles()
+    
+    # Run everything in a single asyncio.run() call
+    asyncio.run(main())
