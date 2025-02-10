@@ -7,10 +7,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from .repository import ArticleRepository
 from .dto import ArticleDTO, CreateArticleDTO, from_model
 
+
 class ArticleService:
-    def __init__(self,
-                 session_factory: Callable[..., AbstractAsyncContextManager[AsyncSession]],
-                 repository: ArticleRepository):
+    def __init__(
+        self,
+        session_factory: Callable[..., AbstractAsyncContextManager[AsyncSession]],
+        repository: ArticleRepository,
+    ):
         self.repository = repository
         self._session_factory = session_factory
 
@@ -25,7 +28,6 @@ class ArticleService:
 
     async def filter_by_url(self, urls: List[str]) -> List[ArticleDTO]:
         async with self._session_factory() as session:
-            return await asyncio.gather(*map(
-                from_model,
-                await self.repository.filter_by_urls(session, urls)
-            ))
+            return await asyncio.gather(
+                *map(from_model, await self.repository.filter_by_urls(session, urls))
+            )

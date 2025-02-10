@@ -3,6 +3,7 @@ from dependency_injector import containers, providers
 from .repository import ArticleRepository
 from .service import ArticleService
 
+
 class ArticleContainer(containers.DeclarativeContainer):
     database = providers.Dependency()
     organizer = providers.DependenciesContainer()

@@ -18,8 +18,9 @@ from dependency_injector.wiring import inject, Provide
 from .article.dto import CreateArticleDTO
 from .organizer.dto import CreateOrganizerDTO
 
+
 class AppContainer(containers.DeclarativeContainer):
-    config = providers.Configuration(yaml_files=['config.yaml'])
+    config = providers.Configuration(yaml_files=["config.yaml"])
 
     # Gateways
     database = providers.Singleton(
@@ -51,6 +52,7 @@ class AppContainer(containers.DeclarativeContainer):
         article=article.provided,
     )
 
+
 @inject
 async def init(
     twikit: Twikit = Provide[AppContainer.twikit],
@@ -59,6 +61,7 @@ async def init(
     db = database.create_database()
     login = twikit.login()
     await asyncio.gather(db, login)
+
 
 @inject
 async def test(
@@ -74,22 +77,26 @@ async def test(
     )
 
     print(organizer)
-    print(await article.service().create(
-        CreateArticleDTO(
-            url="https://www.google.com",
-            author="test",
-            published_at=datetime.now(),
-            related_to_organizer=organizer
+    print(
+        await article.service().create(
+            CreateArticleDTO(
+                url="https://www.google.com",
+                author="test",
+                published_at=datetime.now(),
+                related_to_organizer=organizer,
+            )
         )
-    ))
+    )
 
     print(await article.service().filter_by_url(["https://www.google.com"]))
+
 
 async def main():
     await init()
     await test()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     container = AppContainer()
     container.init_resources()
     container.wire(modules=[__name__])

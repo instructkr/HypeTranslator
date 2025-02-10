@@ -11,3 +11,8 @@ dependencies = [
     "sqlalchemy>=2.0.37",
     "twikit>=2.3.0",
 ]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.9.5",
+]
