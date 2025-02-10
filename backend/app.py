@@ -8,13 +8,15 @@ from .twikit import Twikit
 
 # Containers Classes
 from .article.container import ArticleContainer
+from .organizer.container import OrganizerContainer
 from .collect_article.container import CollectArticleContainer
 
 # for initializing
 from dependency_injector.wiring import inject, Provide
 
 # for testing
-from backend.article.dto import CreateArticleDTO
+from .article.dto import CreateArticleDTO
+from .organizer.dto import CreateOrganizerDTO
 
 class AppContainer(containers.DeclarativeContainer):
     config = providers.Configuration(yaml_files=['config.yaml'])
@@ -33,9 +35,15 @@ class AppContainer(containers.DeclarativeContainer):
     )
 
     # Containers
+    organizer = providers.Container(
+        OrganizerContainer,
+        database=database,
+    )
+
     article = providers.Container(
         ArticleContainer,
         database=database,
+        organizer=organizer,
     )
 
     collectArticle = providers.Container(
@@ -54,17 +62,28 @@ async def init(
 
 @inject
 async def test(
+    database: Database = Provide[AppContainer.database],
     article: ArticleContainer = Provide[AppContainer.article],
+    orginizer: OrganizerContainer = Provide[AppContainer.organizer],
 ) -> None:
-    await article.service().create_article(
+    await database.reset_database()
+    organizer = await orginizer.service().create(
+        CreateOrganizerDTO(
+            name="test",
+        )
+    )
+
+    print(organizer)
+    print(await article.service().create(
         CreateArticleDTO(
             url="https://www.google.com",
             author="test",
             published_at=datetime.now(),
+            related_to_organizer=organizer
         )
-    )
+    ))
 
-    print(list(await article.service().filter_by_url(["https://www.google.com"])))
+    print(await article.service().filter_by_url(["https://www.google.com"]))
 
 async def main():
     await init()

@@ -5,13 +5,15 @@ from .service import ArticleService
 
 class ArticleContainer(containers.DeclarativeContainer):
     database = providers.Dependency()
+    organizer = providers.DependenciesContainer()
 
     repository = providers.Factory(
         ArticleRepository,
-        session_factory=database.provided.session,
+        organizer_repository=organizer.repository.provided,
     )
 
     service = providers.Factory(
         ArticleService,
+        session_factory=database.provided.session,
         repository=repository,
     )
