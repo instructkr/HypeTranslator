@@ -1,5 +1,5 @@
 from contextlib import AbstractAsyncContextManager
-from typing import Callable, List
+from typing import Callable, Iterable, List
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from .repository import OrganizerRepository
@@ -28,4 +28,10 @@ class OrganizerService:
         async with self._session_factory() as session:
             return list(
                 map(from_model, await self.repository.filter_by_names(session, names))
+            )
+
+    async def filter_by_ids(self, ids: Iterable[int]) -> List[OrganizerDTO]:
+        async with self._session_factory() as session:
+            return list(
+                map(from_model, await self.repository.filter_by_ids(session, ids))
             )

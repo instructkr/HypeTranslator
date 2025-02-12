@@ -1,4 +1,4 @@
-from typing import List, Sequence
+from typing import Sequence, Iterable
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
@@ -17,7 +17,7 @@ class ArticleRepository:
         return await session.get(ArticleModel, article_id)
 
     async def filter_by_urls(
-        self, session: AsyncSession, urls: List[str]
+        self, session: AsyncSession, urls: Iterable[str]
     ) -> Sequence[ArticleModel]:
         query = select(ArticleModel).filter(ArticleModel.url.in_(urls))
         result = await session.execute(query)
@@ -44,6 +44,33 @@ class ArticleRepository:
                 article.related_to_organizer = org
 
         session.add(article)
-        await session.commit()
-        await session.refresh(article)
         return article
+
+    async def add_many(
+        self, session: AsyncSession, dtos: Iterable[CreateArticleDTO]
+    ) -> Sequence[ArticleModel]:
+        articles = [
+            ArticleModel(
+                **{
+                    key: value
+                    for key, value in dto.__dict__.items()
+                    if key != "related_to_organizer"
+                }
+            )
+            for dto in dtos
+        ]
+
+        for article in articles:
+            if article.related_to_organizer is not None:
+                org = await self.organizer_repository.get_by_id(
+                    session,
+                    article.related_to_organizer
+                    if isinstance(article.related_to_organizer, int)
+                    else article.related_to_organizer.organizer_id,
+                )
+                if org is not None:
+                    article.related_to_organizer_id = org.organizer_id
+                    article.related_to_organizer = org
+
+        session.add_all(articles)
+        return articles

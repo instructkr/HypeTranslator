@@ -1,4 +1,4 @@
-from typing import List, Sequence
+from typing import Iterable, List, Sequence
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
@@ -22,11 +22,16 @@ class OrganizerRepository:
         result = await session.execute(query)
         return result.scalars().all()
 
+    async def filter_by_ids(
+        self, session: AsyncSession, ids: Iterable[int]
+    ) -> Sequence[OrganizerModel]:
+        query = select(OrganizerModel).filter(OrganizerModel.organizer_id.in_(ids))
+        result = await session.execute(query)
+        return result.scalars().all()
+
     async def add(
         self, session: AsyncSession, dto: CreateOrganizerDTO
     ) -> OrganizerModel:
         organizer = OrganizerModel(name=dto.name, articles=[])
         session.add(organizer)
-        await session.commit()
-        await session.refresh(organizer)
         return organizer

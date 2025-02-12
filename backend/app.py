@@ -49,7 +49,8 @@ class AppContainer(containers.DeclarativeContainer):
 
     collectArticle = providers.Container(
         CollectArticleContainer,
-        article=article.provided,
+        database=database,
+        article=article,
     )
 
 
