@@ -35,15 +35,14 @@ class ArticleRepository:
         if dto.related_to_organizer is not None:
             org = await self.organizer_repository.get_by_id(
                 session,
-                dto.related_to_organizer
-                if isinstance(dto.related_to_organizer, int)
-                else dto.related_to_organizer.organizer_id,
+                dto.related_to_organizer.organizer_id,
             )
             if org is not None:
                 article.related_to_organizer_id = org.organizer_id
                 article.related_to_organizer = org
 
         session.add(article)
+        await session.flush()
         return article
 
     async def add_many(
@@ -64,9 +63,7 @@ class ArticleRepository:
             if article.related_to_organizer is not None:
                 org = await self.organizer_repository.get_by_id(
                     session,
-                    article.related_to_organizer
-                    if isinstance(article.related_to_organizer, int)
-                    else article.related_to_organizer.organizer_id,
+                    article.related_to_organizer.organizer_id,
                 )
                 if org is not None:
                     article.related_to_organizer_id = org.organizer_id

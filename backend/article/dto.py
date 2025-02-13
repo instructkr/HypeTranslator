@@ -13,7 +13,7 @@ class CreateArticleDTO:
     url: str
     author: str
     published_at: datetime
-    related_to_organizer: OrganizerDTO | int | None
+    related_to_organizer: OrganizerDTO | None
 
 
 @dataclass(frozen=True)

@@ -34,4 +34,5 @@ class OrganizerRepository:
     ) -> OrganizerModel:
         organizer = OrganizerModel(name=dto.name, articles=[])
         session.add(organizer)
+        await session.flush()
         return organizer
