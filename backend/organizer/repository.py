@@ -32,7 +32,7 @@ class OrganizerRepository:
     async def add(
         self, session: AsyncSession, dto: CreateOrganizerDTO
     ) -> OrganizerModel:
-        organizer = OrganizerModel(name=dto.name, articles=[])
+        organizer = OrganizerModel(name=dto.name, articles=[], belongs_to_x_account=[])
         session.add(organizer)
         await session.flush()
         return organizer

@@ -27,6 +27,9 @@ class OrganizerModel(Base):
     articles: Mapped[List["ArticleModel"]] = relationship(
         back_populates="related_to_organizer"
     )
+    belongs_to_x_account: Mapped[List["FollowXUserModel"]] = relationship(
+        back_populates="related_to_organizer"
+    )
 
 
 class ArticleModel(Base):
@@ -49,4 +52,22 @@ class ArticleModel(Base):
     related_to_organizer: Mapped["OrganizerModel"] = relationship(
         back_populates="articles",
         default=None,
+    )
+
+
+class FollowXUserModel(Base):
+    __tablename__ = "follow_x_users"
+
+    follow_x_user_id: Mapped[int] = mapped_column(
+        Integer,
+        primary_key=True,
+        autoincrement=True,
+        init=False,
+    )
+    username: Mapped[str] = mapped_column(String, unique=True)
+    related_to_organizer_id: Mapped[int] = mapped_column(
+        ForeignKey("organizers.organizer_id")
+    )
+    related_to_organizer: Mapped["OrganizerModel"] = relationship(
+        back_populates="belongs_to_x_account"
     )

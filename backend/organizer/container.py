@@ -5,6 +5,11 @@ from .service import OrganizerService
 
 
 class OrganizerContainer(containers.DeclarativeContainer):
+    wiring_config = containers.WiringConfiguration(
+        modules=[".fastapi"],
+        auto_wire=False,
+    )
+
     database = providers.Dependency()
 
     repository = providers.Factory(

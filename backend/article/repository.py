@@ -1,4 +1,4 @@
-from typing import Sequence, Iterable
+from typing import List, Sequence, Iterable, Set
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
@@ -48,26 +48,34 @@ class ArticleRepository:
     async def add_many(
         self, session: AsyncSession, dtos: Iterable[CreateArticleDTO]
     ) -> Sequence[ArticleModel]:
-        articles = [
-            ArticleModel(
+        organizer_ids: Set[int] = set()
+        for dto in dtos:
+            if dto.related_to_organizer is not None:
+                organizer_ids.add(dto.related_to_organizer.organizer_id)
+
+        organizers_by_id = {
+            org.organizer_id: org
+            for org in await self.organizer_repository.filter_by_ids(
+                session, organizer_ids
+            )
+        }
+
+        articles: List[ArticleModel] = []
+        for dto in dtos:
+            article = ArticleModel(
                 **{
                     key: value
                     for key, value in dto.__dict__.items()
                     if key != "related_to_organizer"
                 }
             )
-            for dto in dtos
-        ]
-
-        for article in articles:
-            if article.related_to_organizer is not None:
-                org = await self.organizer_repository.get_by_id(
-                    session,
-                    article.related_to_organizer.organizer_id,
-                )
+            if dto.related_to_organizer is not None:
+                org = organizers_by_id.get(dto.related_to_organizer.organizer_id)
                 if org is not None:
                     article.related_to_organizer_id = org.organizer_id
                     article.related_to_organizer = org
+
+            articles.append(article)
 
         session.add_all(articles)
         return articles

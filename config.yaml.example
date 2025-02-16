@@ -3,5 +3,5 @@ db:
 
 twikit:
   id: blahblah
-  email: blahblah@blah.com
+  second_auth: blahblah@blah.com
   pw: blahblah

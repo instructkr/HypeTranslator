@@ -7,6 +7,7 @@ requires-python = ">=3.11"
 dependencies = [
     "aiosqlite>=0.21.0",
     "dependency-injector[yaml]>=4.45.0",
+    "fastapi[standard]>=0.115.8",
     "greenlet>=3.1.1",
     "sqlalchemy>=2.0.37",
     "twikit>=2.3.0",
