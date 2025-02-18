@@ -64,7 +64,8 @@ class FollowXUserModel(Base):
         autoincrement=True,
         init=False,
     )
-    username: Mapped[str] = mapped_column(String, unique=True)
+    username: Mapped[str] = mapped_column(String)
+    real_x_user_id: Mapped[str] = mapped_column(String, unique=True)
     related_to_organizer_id: Mapped[int] = mapped_column(
         ForeignKey("organizers.organizer_id")
     )

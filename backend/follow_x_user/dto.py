@@ -9,6 +9,7 @@ from ..organizer.dto import OrganizerDTO, from_model as OrganizerDTO_from_model
 @dataclass
 class FollowXUserDTO:
     follow_x_user_id: int
+    real_x_user_id: str
     username: str
     organizer: OrganizerDTO
 
@@ -24,6 +25,7 @@ async def from_model(model: FollowXUserModel) -> FollowXUserDTO:
     return FollowXUserDTO(
         follow_x_user_id=model.follow_x_user_id,
         username=model.username,
+        real_x_user_id=model.real_x_user_id,
         organizer=OrganizerDTO_from_model(model.related_to_organizer),
     )
 
@@ -38,6 +40,7 @@ async def dto_list_from_models(
         {
             "follow_x_user_id": model.follow_x_user_id,
             "username": model.username,
+            "real_x_user_id": model.real_x_user_id,
             "organizer_id": model.related_to_organizer.organizer_id,
         }
         for model in models
@@ -53,6 +56,7 @@ async def dto_list_from_models(
             lambda d: FollowXUserDTO(
                 follow_x_user_id=d["follow_x_user_id"],
                 username=d["username"],
+                real_x_user_id=d["real_x_user_id"],
                 organizer=organizer_by_id[d["organizer_id"]],
             ),
             dto_list,

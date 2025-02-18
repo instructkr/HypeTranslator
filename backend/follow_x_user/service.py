@@ -13,7 +13,7 @@ class FollowXUserService:
         self,
         session_factory: Callable[..., AbstractAsyncContextManager[AsyncSession]],
         repository: FollowXUserRepository,
-        organizer_service: OrganizerService,
+        organizer_service: Callable[..., OrganizerService],
     ):
         self._session = session_factory
         self._repository = repository

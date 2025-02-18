@@ -11,7 +11,7 @@ from ..models import FollowXUserModel
 
 
 async def action_delay():
-    await asyncio.sleep(15 + random.uniform(-5, 15))
+    await asyncio.sleep(10 + random.uniform(-5, 5))
 
 
 class FollowXUserRepository:
@@ -23,12 +23,10 @@ class FollowXUserRepository:
         self._organizer_repository = organizer_repository()
         self._twikitClient = twikitClient
 
-    async def _follow_x_user(self, username: str) -> TwikitUser:
+    async def _get_x_user_by_screen_name(self, username: str) -> TwikitUser:
         user = await self._twikitClient.get_user_by_screen_name(username)
         await action_delay()
-        result = await self._twikitClient.follow_user(user.id)
-        await action_delay()
-        return result
+        return user
 
     async def new_follow_x_users(
         self, session: AsyncSession, new_follow_x_users: Iterable[NewFollowXUserDTO]
@@ -39,18 +37,23 @@ class FollowXUserRepository:
         organizer_by_id = {org.organizer_id: org for org in organizers}
 
         result: List[FollowXUserModel] = []
+        # Shuffle the list to avoid following users in the same order
+        new_follow_x_users = list(new_follow_x_users)
+        random.shuffle(new_follow_x_users)
         for new_follow_x_user in new_follow_x_users:
+            x_user = await self._get_x_user_by_screen_name(new_follow_x_user.username)
             followXUser = FollowXUserModel(
                 username=new_follow_x_user.username,
+                real_x_user_id=x_user.id,
                 related_to_organizer_id=new_follow_x_user.organizer.organizer_id,
                 related_to_organizer=organizer_by_id[
                     new_follow_x_user.organizer.organizer_id
                 ],
             )
 
-            session.add(followXUser)
-            await self._follow_x_user(new_follow_x_user.username)
-            await session.flush()
             result.append(followXUser)
+
+        session.add_all(result)
+        await session.flush()
 
         return result
