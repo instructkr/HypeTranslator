@@ -34,14 +34,14 @@ async def dto_list_from_models(
     organizer_service: Callable[..., OrganizerService],
     models: Iterable[FollowXUserModel],
 ) -> List[FollowXUserDTO]:
-    organizer_ids = [model.related_to_organizer.organizer_id for model in models]
+    organizer_ids = [model.related_to_organizer_id for model in models]
 
     dto_list = [
         {
             "follow_x_user_id": model.follow_x_user_id,
             "username": model.username,
             "real_x_user_id": model.real_x_user_id,
-            "organizer_id": model.related_to_organizer.organizer_id,
+            "organizer_id": model.related_to_organizer_id,
         }
         for model in models
     ]

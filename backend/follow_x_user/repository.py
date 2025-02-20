@@ -1,17 +1,14 @@
-import asyncio
 import random
 from collections.abc import Iterable
-from typing import Callable, List
+from typing import Callable, List, Sequence
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from twikit import Client as TwikitClient, User as TwikitUser
+from ..twikit import action_delay
 
 from .dto import NewFollowXUserDTO
 from ..organizer.repository import OrganizerRepository
 from ..models import FollowXUserModel
-
-
-async def action_delay():
-    await asyncio.sleep(10 + random.uniform(-5, 5))
 
 
 class FollowXUserRepository:
@@ -57,3 +54,9 @@ class FollowXUserRepository:
         await session.flush()
 
         return result
+
+    async def get_all_followed_x_users(
+        self, session: AsyncSession
+    ) -> Sequence[FollowXUserModel]:
+        result = await session.execute(select(FollowXUserModel))
+        return result.scalars().all()

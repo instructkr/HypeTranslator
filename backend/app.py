@@ -20,6 +20,7 @@ from dependency_injector.wiring import inject, Provide
 # for fastapi routers
 from .organizer.fastapi import router as organizer_router
 from .follow_x_user.fastapi import router as follow_x_user_router
+from .collect_article.fastapi import router as collect_article_router
 
 
 class AppContainer(containers.DeclarativeContainer):
@@ -57,10 +58,11 @@ class AppContainer(containers.DeclarativeContainer):
         organizer=organizer,
     )
 
-    collectArticle = providers.Container(
+    collect_article = providers.Container(
         CollectArticleContainer,
         database=database,
         article=article,
+        follow_x_user=follow_x_user,
     )
 
 
@@ -83,6 +85,7 @@ async def fastapi_lifespan(_: FastAPI):
     container.wire(modules=[".app"])
     container.organizer.container.wire()
     container.follow_x_user.container.wire()
+    container.collect_article.container.wire()
     # Initialize Phase
     await init()
     yield
@@ -91,6 +94,7 @@ async def fastapi_lifespan(_: FastAPI):
 fastapi = FastAPI(lifespan=fastapi_lifespan)
 fastapi.include_router(organizer_router)
 fastapi.include_router(follow_x_user_router)
+fastapi.include_router(collect_article_router)
 
 if __name__ == "__main__":
     uvicorn.run("backend.app:fastapi", host="0.0.0.0", port=8000, reload=True)

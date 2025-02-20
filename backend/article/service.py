@@ -23,9 +23,11 @@ class ArticleService:
         async with self._session_factory() as session:
             return await from_model(await self.repository.add(session, dto))
 
-    async def create_many(self, dtos: List[CreateArticleDTO]):
+    async def create_many(self, dtos: List[CreateArticleDTO]) -> List[ArticleDTO]:
         async with self._session_factory() as session:
-            await self.repository.add_many(session, dtos)
+            return await model_list_to_dto_list(
+                self.organizer_service, await self.repository.add_many(session, dtos)
+            )
 
     async def get_by_id(self, id: int) -> ArticleDTO | None:
         async with self._session_factory() as session:

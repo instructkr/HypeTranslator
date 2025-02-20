@@ -1,3 +1,5 @@
+import asyncio
+import random
 from twikit import Client
 
 
@@ -17,3 +19,7 @@ class Twikit:
         )
 
         self.client.save_cookies("cookies.json")
+
+
+async def action_delay():
+    await asyncio.sleep(10 + random.uniform(-5, 5))

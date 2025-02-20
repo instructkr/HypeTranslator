@@ -78,4 +78,5 @@ class ArticleRepository:
             articles.append(article)
 
         session.add_all(articles)
+        await session.flush()
         return articles

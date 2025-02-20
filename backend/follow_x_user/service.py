@@ -27,3 +27,10 @@ class FollowXUserService:
                 self._organizer_service,
                 await self._repository.new_follow_x_users(session, new_follow_x_users),
             )
+
+    async def get_all_followed_x_users(self) -> List[FollowXUserDTO]:
+        async with self._session() as session:
+            return await dto_list_from_models(
+                self._organizer_service,
+                await self._repository.get_all_followed_x_users(session),
+            )
