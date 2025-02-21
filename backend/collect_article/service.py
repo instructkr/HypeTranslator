@@ -24,7 +24,7 @@ class CollectArticleService:
     def __init__(
         self,
         article_service: Callable[..., ArticleService],
-        trackers: list[Callable[..., AbstractTracker]],
+        trackers: list[AbstractTracker],
     ):
         self.article_service = article_service()
         self.trackers = trackers
@@ -35,7 +35,7 @@ class CollectArticleService:
 
         queue = asyncio.Queue()
         for tracker in self.trackers:
-            asyncio.create_task(_worker(queue, tracker()))
+            asyncio.create_task(_worker(queue, tracker))
 
         for _ in self.trackers:
             tracker_result = await queue.get()
@@ -45,4 +45,12 @@ class CollectArticleService:
             plan_articles.extend(filtered_tracker_result)
             visited_urls.update(article.url for article in filtered_tracker_result)
 
-        return await self.article_service.create_many(plan_articles)
+        queryDuplicated = await self.article_service.filter_by_url(visited_urls)
+        non_duplicated_urls = visited_urls.difference(
+            article.url for article in queryDuplicated
+        )
+        filtered_plan_articles = filter(
+            lambda a: bool(a.url in non_duplicated_urls), plan_articles
+        )
+
+        return await self.article_service.create_many(filtered_plan_articles)

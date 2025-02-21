@@ -43,6 +43,8 @@ class ArticleModel(Base):
     url: Mapped[str] = mapped_column(String, unique=True)
     author: Mapped[str]
     published_at: Mapped[datetime] = mapped_column(DateTime)
+    title: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
+    content: Mapped[str | None] = mapped_column(String, nullable=True, default=None)
     related_to_organizer_id: Mapped[int] = mapped_column(
         Integer,
         ForeignKey("organizers.organizer_id"),

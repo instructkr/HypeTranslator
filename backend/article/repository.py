@@ -48,10 +48,12 @@ class ArticleRepository:
     async def add_many(
         self, session: AsyncSession, dtos: Iterable[CreateArticleDTO]
     ) -> Sequence[ArticleModel]:
-        organizer_ids: Set[int] = set()
-        for dto in dtos:
-            if dto.related_to_organizer is not None:
-                organizer_ids.add(dto.related_to_organizer.organizer_id)
+        dto_list: List[CreateArticleDTO] = list(dtos)
+        organizer_ids: Set[int] = set(
+            dto.related_to_organizer.organizer_id
+            for dto in dto_list
+            if dto.related_to_organizer is not None
+        )
 
         organizers_by_id = {
             org.organizer_id: org
@@ -61,12 +63,12 @@ class ArticleRepository:
         }
 
         articles: List[ArticleModel] = []
-        for dto in dtos:
+        for dto in dto_list:
             article = ArticleModel(
                 **{
                     key: value
                     for key, value in dto.__dict__.items()
-                    if key != "related_to_organizer"
+                    if key not in {"related_to_organizer"}
                 }
             )
             if dto.related_to_organizer is not None:

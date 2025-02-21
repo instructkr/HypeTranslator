@@ -62,7 +62,9 @@ class AppContainer(containers.DeclarativeContainer):
         CollectArticleContainer,
         database=database,
         article=article,
-        follow_x_user=follow_x_user,
+        trackers=providers.List(
+            follow_x_user.provided().providers["tracker"],
+        ),
     )
 
 

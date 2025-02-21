@@ -1,6 +1,6 @@
 import random
 from collections.abc import Iterable
-from typing import Callable, List, Sequence
+from typing import List, Sequence
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from twikit import Client as TwikitClient, User as TwikitUser
@@ -14,10 +14,10 @@ from ..models import FollowXUserModel
 class FollowXUserRepository:
     def __init__(
         self,
-        organizer_repository: Callable[..., OrganizerRepository],
+        organizer_repository: OrganizerRepository,
         twikitClient: TwikitClient,
     ):
-        self._organizer_repository = organizer_repository()
+        self._organizer_repository = organizer_repository
         self._twikitClient = twikitClient
 
     async def _get_x_user_by_screen_name(self, username: str) -> TwikitUser:
@@ -40,9 +40,12 @@ class FollowXUserRepository:
         for new_follow_x_user in new_follow_x_users:
             x_user = await self._get_x_user_by_screen_name(new_follow_x_user.username)
             followXUser = FollowXUserModel(
-                username=new_follow_x_user.username,
+                **{
+                    k: v
+                    for k, v in new_follow_x_user.__dict__.items()
+                    if k not in {"organizer"}
+                },
                 real_x_user_id=x_user.id,
-                related_to_organizer_id=new_follow_x_user.organizer.organizer_id,
                 related_to_organizer=organizer_by_id[
                     new_follow_x_user.organizer.organizer_id
                 ],

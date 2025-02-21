@@ -17,5 +17,5 @@ class ArticleContainer(containers.DeclarativeContainer):
         ArticleService,
         session_factory=database.provided.session,
         repository=repository,
-        organizer_service=organizer.service.provided,
+        organizer_repository=organizer.repository.provided,
     )

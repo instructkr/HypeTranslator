@@ -26,10 +26,11 @@ class FollowXUserTracker(AbstractTracker):
                 result.extend(
                     [
                         CreateArticleDTO(
-                            url=f"https://x.com/{followed_x_user.username}/status/{tweet.id}",
+                            url=f"https://x.com/{tweet.user.screen_name}/status/{tweet.id}",
                             author=tweet.user.screen_name,
                             published_at=tweet.created_at_datetime,
                             related_to_organizer=followed_x_user.organizer,
+                            content=tweet.full_text,
                         )
                         for tweet in tweets
                     ]

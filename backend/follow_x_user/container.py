@@ -18,14 +18,14 @@ class FollowXUserContainer(containers.DeclarativeContainer):
     repository = providers.Factory(
         FollowXUserRepository,
         twikitClient=twikit.provided.client,
-        organizer_repository=organizer.provided.repository,
+        organizer_repository=organizer.repository.provided,
     )
 
     service = providers.Factory(
         FollowXUserService,
         session_factory=database.provided.session,
         repository=repository,
-        organizer_service=organizer.provided.service,
+        organizer_repository=organizer.repository.provided,
     )
 
     tracker = providers.Factory(

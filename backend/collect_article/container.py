@@ -11,12 +11,10 @@ class CollectArticleContainer(containers.DeclarativeContainer):
 
     database = providers.Dependency()
     article = providers.DependenciesContainer()
-    follow_x_user = providers.DependenciesContainer()
+    trackers = providers.Dependency()
 
     service = providers.Factory(
         CollectArticleService,
         article_service=article.provided.service,
-        trackers=providers.List(
-            follow_x_user.provided.tracker,
-        ),
+        trackers=trackers,
     )
